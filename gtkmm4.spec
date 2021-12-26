@@ -5,12 +5,13 @@
 %define keepstatic 1
 Name     : gtkmm4
 Version  : 4.4.0
-Release  : 206
+Release  : 208
 URL      : file:///aot/build/clearlinux/packages/gtkmm4/gtkmm4-v4.4.0.tar.gz
 Source0  : file:///aot/build/clearlinux/packages/gtkmm4/gtkmm4-v4.4.0.tar.gz
 Summary  : C++ binding for the GTK+ toolkit
 Group    : Development/Tools
 License  : GPL-2.0 LGPL-2.1
+Requires: gtkmm4-lib = %{version}-%{release}
 BuildRequires : Vulkan-Headers-dev
 BuildRequires : Vulkan-Loader-dev
 BuildRequires : atk
@@ -72,6 +73,8 @@ BuildRequires : gtk4-dev
 BuildRequires : harfbuzz-dev
 BuildRequires : icu4c-dev
 BuildRequires : icu4c-lib
+BuildRequires : keyutils
+BuildRequires : keyutils-dev
 BuildRequires : krb5
 BuildRequires : krb5-dev
 BuildRequires : libICE-dev
@@ -244,6 +247,34 @@ See http://www.gtkmm.org/
 Whenever possible, you should use the official binary packages approved by the
 supplier of your operating system, such as your Linux distribution.
 
+%package dev
+Summary: dev components for the gtkmm4 package.
+Group: Development
+Requires: gtkmm4-lib = %{version}-%{release}
+Provides: gtkmm4-devel = %{version}-%{release}
+Requires: gtkmm4 = %{version}-%{release}
+
+%description dev
+dev components for the gtkmm4 package.
+
+
+%package lib
+Summary: lib components for the gtkmm4 package.
+Group: Libraries
+
+%description lib
+lib components for the gtkmm4 package.
+
+
+%package staticdev
+Summary: staticdev components for the gtkmm4 package.
+Group: Default
+Requires: gtkmm4-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the gtkmm4 package.
+
+
 %prep
 %setup -q -n gtkmm4
 cd %{_builddir}/gtkmm4
@@ -254,7 +285,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1640502811
+export SOURCE_DATE_EPOCH=1640503301
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -263,27 +294,27 @@ export NM=gcc-nm
 ## pgo generate
 unset ASFLAGS
 export PGO_GEN="-fprofile-generate=/var/tmp/pgo -fprofile-dir=/var/tmp/pgo -fprofile-abs-path -fprofile-update=atomic -fprofile-arcs -ftest-coverage -fprofile-partial-training -fprofile-correction -freorder-functions --coverage -lgcov"
-export CFLAGS_GENERATE="-Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
-export ASMFLAGS_GENERATE="-Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
-export FCFLAGS_GENERATE="-Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
-export FFLAGS_GENERATE="-Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
-export CXXFLAGS_GENERATE="-Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
-export LDFLAGS_GENERATE="-Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
+export CFLAGS_GENERATE="-O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
+export ASMFLAGS_GENERATE="-O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
+export FCFLAGS_GENERATE="-O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
+export FFLAGS_GENERATE="-O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
+export CXXFLAGS_GENERATE="-O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
+export LDFLAGS_GENERATE="-O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_GEN"
 export LIBS_GENERATE="-lgcov"
 ## pgo use
 ## -fno-tree-vectorize: disable -ftree-vectorize thus disable -ftree-loop-vectorize and -ftree-slp-vectorize -fopt-info-vec
-## -Ofast -ffast-math
+## -O3 -ffast-math
 ## -funroll-loops maybe dangerous
 ## -Wl,-z,max-page-size=0x1000
 ## -pthread -lpthread
 ## -Wl,-Bsymbolic-functions
 export PGO_USE="-Wmissing-profile -Wcoverage-mismatch -fprofile-use=/var/tmp/pgo -fprofile-dir=/var/tmp/pgo -fprofile-abs-path -fprofile-update=atomic -fprofile-partial-training -fprofile-correction -freorder-functions"
-export CFLAGS_USE="-g3 -ggdb -Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
-export ASMFLAGS_USE="-g3 -ggdb -Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
-export FCFLAGS_USE="-g3 -ggdb -Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
-export FFLAGS_USE="-g3 -ggdb -Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
-export CXXFLAGS_USE="-g3 -ggdb -Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
-export LDFLAGS_USE="-g3 -ggdb -Ofast --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
+export CFLAGS_USE="-g3 -ggdb -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
+export ASMFLAGS_USE="-g3 -ggdb -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
+export FCFLAGS_USE="-g3 -ggdb -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
+export FFLAGS_USE="-g3 -ggdb -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
+export CXXFLAGS_USE="-g3 -ggdb -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
+export LDFLAGS_USE="-g3 -ggdb -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now,-z,relro,-z,max-page-size=0x1000,-z,separate-code -Wno-error -mprefer-vector-width=256 -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-math-errno -fno-semantic-interposition -Wl,-Bsymbolic-functions -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-slp-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fipa-pta -flto=auto -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -fomit-frame-pointer -fexceptions -static-libstdc++ -static-libgcc $PGO_USE"
 #
 export AR=/usr/bin/gcc-ar
 export RANLIB=/usr/bin/gcc-ranlib
@@ -358,6 +389,7 @@ export ASMFLAGS="${ASMFLAGS_GENERATE}"
 export LIBS="${LIBS_GENERATE}"
 CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" LIBS="$LIBS" meson --libdir=lib64 --prefix=/usr --buildtype=plain -Ddefault_library=both  -Ddefault_library=both \
 -Dbuild-documentation=false \
+-Dbuild-demos=false \
 -Dbuild-tests=true builddir
 ninja --verbose %{?_smp_mflags} -C builddir
 
@@ -382,6 +414,7 @@ export ASMFLAGS="${ASMFLAGS_USE}"
 export LIBS="${LIBS_USE}"
 CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" LIBS="$LIBS" meson --libdir=lib64 --prefix=/usr --buildtype=plain -Ddefault_library=both -Ddefault_library=both \
 -Dbuild-documentation=false \
+-Dbuild-demos=false \
 -Dbuild-tests=false  builddir
 ninja --verbose %{?_smp_mflags} -C builddir
 fi
@@ -391,3 +424,633 @@ DESTDIR=%{buildroot} ninja -C builddir install
 
 %files
 %defattr(-,root,root,-)
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/gtkmm-4.0/gdkmm.h
+/usr/include/gtkmm-4.0/gdkmm/applaunchcontext.h
+/usr/include/gtkmm-4.0/gdkmm/cairocontext.h
+/usr/include/gtkmm-4.0/gdkmm/cairoutils.h
+/usr/include/gtkmm-4.0/gdkmm/clipboard.h
+/usr/include/gtkmm-4.0/gdkmm/contentformats.h
+/usr/include/gtkmm-4.0/gdkmm/contentformatsbuilder.h
+/usr/include/gtkmm-4.0/gdkmm/contentprovider.h
+/usr/include/gtkmm-4.0/gdkmm/cursor.h
+/usr/include/gtkmm-4.0/gdkmm/device.h
+/usr/include/gtkmm-4.0/gdkmm/devicepad.h
+/usr/include/gtkmm-4.0/gdkmm/devicetool.h
+/usr/include/gtkmm-4.0/gdkmm/devicewithpad.h
+/usr/include/gtkmm-4.0/gdkmm/display.h
+/usr/include/gtkmm-4.0/gdkmm/displaymanager.h
+/usr/include/gtkmm-4.0/gdkmm/drag.h
+/usr/include/gtkmm-4.0/gdkmm/dragsurface.h
+/usr/include/gtkmm-4.0/gdkmm/dragsurfaceimpl.h
+/usr/include/gtkmm-4.0/gdkmm/drawcontext.h
+/usr/include/gtkmm-4.0/gdkmm/drop.h
+/usr/include/gtkmm-4.0/gdkmm/enums.h
+/usr/include/gtkmm-4.0/gdkmm/event.h
+/usr/include/gtkmm-4.0/gdkmm/frameclock.h
+/usr/include/gtkmm-4.0/gdkmm/frametimings.h
+/usr/include/gtkmm-4.0/gdkmm/general.h
+/usr/include/gtkmm-4.0/gdkmm/glcontext.h
+/usr/include/gtkmm-4.0/gdkmm/gltexture.h
+/usr/include/gtkmm-4.0/gdkmm/memorytexture.h
+/usr/include/gtkmm-4.0/gdkmm/monitor.h
+/usr/include/gtkmm-4.0/gdkmm/paintable.h
+/usr/include/gtkmm-4.0/gdkmm/pixbuf.h
+/usr/include/gtkmm-4.0/gdkmm/pixbufanimation.h
+/usr/include/gtkmm-4.0/gdkmm/pixbufanimationiter.h
+/usr/include/gtkmm-4.0/gdkmm/pixbufformat.h
+/usr/include/gtkmm-4.0/gdkmm/pixbufloader.h
+/usr/include/gtkmm-4.0/gdkmm/popup.h
+/usr/include/gtkmm-4.0/gdkmm/popuplayout.h
+/usr/include/gtkmm-4.0/gdkmm/popupsurfaceimpl.h
+/usr/include/gtkmm-4.0/gdkmm/private/applaunchcontext_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/cairocontext_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/clipboard_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/contentformats_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/contentformatsbuilder_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/contentprovider_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/cursor_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/device_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/devicepad_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/devicetool_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/display_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/displaymanager_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/drag_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/dragsurface_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/drawcontext_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/drop_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/enums_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/event_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/frameclock_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/frametimings_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/glcontext_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/gltexture_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/memorytexture_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/monitor_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/paintable_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/pixbuf_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/pixbufanimation_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/pixbufanimationiter_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/pixbufformat_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/pixbufloader_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/popup_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/popuplayout_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/rectangle_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/rgba_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/seat_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/snapshot_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/surface_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/texture_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/timecoord_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/toplevel_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/toplevellayout_p.h
+/usr/include/gtkmm-4.0/gdkmm/private/toplevelsize_p.h
+/usr/include/gtkmm-4.0/gdkmm/rectangle.h
+/usr/include/gtkmm-4.0/gdkmm/rgba.h
+/usr/include/gtkmm-4.0/gdkmm/seat.h
+/usr/include/gtkmm-4.0/gdkmm/snapshot.h
+/usr/include/gtkmm-4.0/gdkmm/surface.h
+/usr/include/gtkmm-4.0/gdkmm/texture.h
+/usr/include/gtkmm-4.0/gdkmm/timecoord.h
+/usr/include/gtkmm-4.0/gdkmm/toplevel.h
+/usr/include/gtkmm-4.0/gdkmm/toplevellayout.h
+/usr/include/gtkmm-4.0/gdkmm/toplevelsize.h
+/usr/include/gtkmm-4.0/gdkmm/toplevelsurfaceimpl.h
+/usr/include/gtkmm-4.0/gdkmm/value_cairo.h
+/usr/include/gtkmm-4.0/gdkmm/wrap_init.h
+/usr/include/gtkmm-4.0/gtkmm.h
+/usr/include/gtkmm-4.0/gtkmm/aboutdialog.h
+/usr/include/gtkmm-4.0/gtkmm/accelerator.h
+/usr/include/gtkmm-4.0/gtkmm/accelkey.h
+/usr/include/gtkmm-4.0/gtkmm/accessible.h
+/usr/include/gtkmm-4.0/gtkmm/actionable.h
+/usr/include/gtkmm-4.0/gtkmm/actionbar.h
+/usr/include/gtkmm-4.0/gtkmm/adjustment.h
+/usr/include/gtkmm-4.0/gtkmm/appchooser.h
+/usr/include/gtkmm-4.0/gtkmm/appchooserbutton.h
+/usr/include/gtkmm-4.0/gtkmm/appchooserdialog.h
+/usr/include/gtkmm-4.0/gtkmm/appchooserwidget.h
+/usr/include/gtkmm-4.0/gtkmm/application.h
+/usr/include/gtkmm-4.0/gtkmm/applicationwindow.h
+/usr/include/gtkmm-4.0/gtkmm/aspectframe.h
+/usr/include/gtkmm-4.0/gtkmm/assistant.h
+/usr/include/gtkmm-4.0/gtkmm/assistantpage.h
+/usr/include/gtkmm-4.0/gtkmm/binlayout.h
+/usr/include/gtkmm-4.0/gtkmm/bitset.h
+/usr/include/gtkmm-4.0/gtkmm/bitsetconstiter.h
+/usr/include/gtkmm-4.0/gtkmm/boolfilter.h
+/usr/include/gtkmm-4.0/gtkmm/border.h
+/usr/include/gtkmm-4.0/gtkmm/box.h
+/usr/include/gtkmm-4.0/gtkmm/boxlayout.h
+/usr/include/gtkmm-4.0/gtkmm/buildable.h
+/usr/include/gtkmm-4.0/gtkmm/builder.h
+/usr/include/gtkmm-4.0/gtkmm/buildercscope.h
+/usr/include/gtkmm-4.0/gtkmm/builderscope.h
+/usr/include/gtkmm-4.0/gtkmm/button.h
+/usr/include/gtkmm-4.0/gtkmm/calendar.h
+/usr/include/gtkmm-4.0/gtkmm/cellarea.h
+/usr/include/gtkmm-4.0/gtkmm/cellareabox.h
+/usr/include/gtkmm-4.0/gtkmm/cellareacontext.h
+/usr/include/gtkmm-4.0/gtkmm/celleditable.h
+/usr/include/gtkmm-4.0/gtkmm/celllayout.h
+/usr/include/gtkmm-4.0/gtkmm/cellrenderer.h
+/usr/include/gtkmm-4.0/gtkmm/cellrenderer_generation.h
+/usr/include/gtkmm-4.0/gtkmm/cellrendereraccel.h
+/usr/include/gtkmm-4.0/gtkmm/cellrenderercombo.h
+/usr/include/gtkmm-4.0/gtkmm/cellrendererpixbuf.h
+/usr/include/gtkmm-4.0/gtkmm/cellrendererprogress.h
+/usr/include/gtkmm-4.0/gtkmm/cellrendererspin.h
+/usr/include/gtkmm-4.0/gtkmm/cellrendererspinner.h
+/usr/include/gtkmm-4.0/gtkmm/cellrenderertext.h
+/usr/include/gtkmm-4.0/gtkmm/cellrenderertoggle.h
+/usr/include/gtkmm-4.0/gtkmm/cellview.h
+/usr/include/gtkmm-4.0/gtkmm/centerbox.h
+/usr/include/gtkmm-4.0/gtkmm/centerlayout.h
+/usr/include/gtkmm-4.0/gtkmm/checkbutton.h
+/usr/include/gtkmm-4.0/gtkmm/colorbutton.h
+/usr/include/gtkmm-4.0/gtkmm/colorchooser.h
+/usr/include/gtkmm-4.0/gtkmm/colorchooserdialog.h
+/usr/include/gtkmm-4.0/gtkmm/columnview.h
+/usr/include/gtkmm-4.0/gtkmm/columnviewcolumn.h
+/usr/include/gtkmm-4.0/gtkmm/combobox.h
+/usr/include/gtkmm-4.0/gtkmm/comboboxtext.h
+/usr/include/gtkmm-4.0/gtkmm/constraint.h
+/usr/include/gtkmm-4.0/gtkmm/constraintguide.h
+/usr/include/gtkmm-4.0/gtkmm/constraintlayout.h
+/usr/include/gtkmm-4.0/gtkmm/constrainttarget.h
+/usr/include/gtkmm-4.0/gtkmm/csslocation.h
+/usr/include/gtkmm-4.0/gtkmm/cssprovider.h
+/usr/include/gtkmm-4.0/gtkmm/csssection.h
+/usr/include/gtkmm-4.0/gtkmm/dialog.h
+/usr/include/gtkmm-4.0/gtkmm/directorylist.h
+/usr/include/gtkmm-4.0/gtkmm/dragicon.h
+/usr/include/gtkmm-4.0/gtkmm/dragsource.h
+/usr/include/gtkmm-4.0/gtkmm/drawingarea.h
+/usr/include/gtkmm-4.0/gtkmm/dropcontrollermotion.h
+/usr/include/gtkmm-4.0/gtkmm/dropdown.h
+/usr/include/gtkmm-4.0/gtkmm/droptarget.h
+/usr/include/gtkmm-4.0/gtkmm/droptargetasync.h
+/usr/include/gtkmm-4.0/gtkmm/editable.h
+/usr/include/gtkmm-4.0/gtkmm/editablelabel.h
+/usr/include/gtkmm-4.0/gtkmm/emojichooser.h
+/usr/include/gtkmm-4.0/gtkmm/entry.h
+/usr/include/gtkmm-4.0/gtkmm/entrybuffer.h
+/usr/include/gtkmm-4.0/gtkmm/entrycompletion.h
+/usr/include/gtkmm-4.0/gtkmm/enums.h
+/usr/include/gtkmm-4.0/gtkmm/eventcontroller.h
+/usr/include/gtkmm-4.0/gtkmm/eventcontrollerfocus.h
+/usr/include/gtkmm-4.0/gtkmm/eventcontrollerkey.h
+/usr/include/gtkmm-4.0/gtkmm/eventcontrollerlegacy.h
+/usr/include/gtkmm-4.0/gtkmm/eventcontrollermotion.h
+/usr/include/gtkmm-4.0/gtkmm/eventcontrollerscroll.h
+/usr/include/gtkmm-4.0/gtkmm/expander.h
+/usr/include/gtkmm-4.0/gtkmm/expression.h
+/usr/include/gtkmm-4.0/gtkmm/expressionwatch.h
+/usr/include/gtkmm-4.0/gtkmm/filechooser.h
+/usr/include/gtkmm-4.0/gtkmm/filechooserdialog.h
+/usr/include/gtkmm-4.0/gtkmm/filechoosernative.h
+/usr/include/gtkmm-4.0/gtkmm/filechooserwidget.h
+/usr/include/gtkmm-4.0/gtkmm/filefilter.h
+/usr/include/gtkmm-4.0/gtkmm/filter.h
+/usr/include/gtkmm-4.0/gtkmm/filterlistmodel.h
+/usr/include/gtkmm-4.0/gtkmm/fixed.h
+/usr/include/gtkmm-4.0/gtkmm/flattenlistmodel.h
+/usr/include/gtkmm-4.0/gtkmm/flowbox.h
+/usr/include/gtkmm-4.0/gtkmm/flowboxchild.h
+/usr/include/gtkmm-4.0/gtkmm/fontbutton.h
+/usr/include/gtkmm-4.0/gtkmm/fontchooser.h
+/usr/include/gtkmm-4.0/gtkmm/fontchooserdialog.h
+/usr/include/gtkmm-4.0/gtkmm/fontchooserwidget.h
+/usr/include/gtkmm-4.0/gtkmm/frame.h
+/usr/include/gtkmm-4.0/gtkmm/gesture.h
+/usr/include/gtkmm-4.0/gtkmm/gestureclick.h
+/usr/include/gtkmm-4.0/gtkmm/gesturedrag.h
+/usr/include/gtkmm-4.0/gtkmm/gesturelongpress.h
+/usr/include/gtkmm-4.0/gtkmm/gesturepan.h
+/usr/include/gtkmm-4.0/gtkmm/gesturerotate.h
+/usr/include/gtkmm-4.0/gtkmm/gesturesingle.h
+/usr/include/gtkmm-4.0/gtkmm/gesturestylus.h
+/usr/include/gtkmm-4.0/gtkmm/gestureswipe.h
+/usr/include/gtkmm-4.0/gtkmm/gesturezoom.h
+/usr/include/gtkmm-4.0/gtkmm/glarea.h
+/usr/include/gtkmm-4.0/gtkmm/grid.h
+/usr/include/gtkmm-4.0/gtkmm/gridlayout.h
+/usr/include/gtkmm-4.0/gtkmm/gridlayoutchild.h
+/usr/include/gtkmm-4.0/gtkmm/gridview.h
+/usr/include/gtkmm-4.0/gtkmm/headerbar.h
+/usr/include/gtkmm-4.0/gtkmm/iconpaintable.h
+/usr/include/gtkmm-4.0/gtkmm/icontheme.h
+/usr/include/gtkmm-4.0/gtkmm/iconview.h
+/usr/include/gtkmm-4.0/gtkmm/image.h
+/usr/include/gtkmm-4.0/gtkmm/infobar.h
+/usr/include/gtkmm-4.0/gtkmm/init.h
+/usr/include/gtkmm-4.0/gtkmm/label.h
+/usr/include/gtkmm-4.0/gtkmm/layoutchild.h
+/usr/include/gtkmm-4.0/gtkmm/layoutmanager.h
+/usr/include/gtkmm-4.0/gtkmm/levelbar.h
+/usr/include/gtkmm-4.0/gtkmm/linkbutton.h
+/usr/include/gtkmm-4.0/gtkmm/listbase.h
+/usr/include/gtkmm-4.0/gtkmm/listbox.h
+/usr/include/gtkmm-4.0/gtkmm/listboxrow.h
+/usr/include/gtkmm-4.0/gtkmm/listitem.h
+/usr/include/gtkmm-4.0/gtkmm/listitemfactory.h
+/usr/include/gtkmm-4.0/gtkmm/liststore.h
+/usr/include/gtkmm-4.0/gtkmm/listview.h
+/usr/include/gtkmm-4.0/gtkmm/listviewtext.h
+/usr/include/gtkmm-4.0/gtkmm/lockbutton.h
+/usr/include/gtkmm-4.0/gtkmm/mediacontrols.h
+/usr/include/gtkmm-4.0/gtkmm/mediafile.h
+/usr/include/gtkmm-4.0/gtkmm/mediastream.h
+/usr/include/gtkmm-4.0/gtkmm/menubutton.h
+/usr/include/gtkmm-4.0/gtkmm/messagedialog.h
+/usr/include/gtkmm-4.0/gtkmm/multifilter.h
+/usr/include/gtkmm-4.0/gtkmm/multiselection.h
+/usr/include/gtkmm-4.0/gtkmm/multisorter.h
+/usr/include/gtkmm-4.0/gtkmm/native.h
+/usr/include/gtkmm-4.0/gtkmm/nativedialog.h
+/usr/include/gtkmm-4.0/gtkmm/noselection.h
+/usr/include/gtkmm-4.0/gtkmm/notebook.h
+/usr/include/gtkmm-4.0/gtkmm/notebookpage.h
+/usr/include/gtkmm-4.0/gtkmm/numericsorter.h
+/usr/include/gtkmm-4.0/gtkmm/object.h
+/usr/include/gtkmm-4.0/gtkmm/orientable.h
+/usr/include/gtkmm-4.0/gtkmm/overlay.h
+/usr/include/gtkmm-4.0/gtkmm/padactionentry.h
+/usr/include/gtkmm-4.0/gtkmm/padcontroller.h
+/usr/include/gtkmm-4.0/gtkmm/pagesetup.h
+/usr/include/gtkmm-4.0/gtkmm/pagesetupunixdialog.h
+/usr/include/gtkmm-4.0/gtkmm/paned.h
+/usr/include/gtkmm-4.0/gtkmm/papersize.h
+/usr/include/gtkmm-4.0/gtkmm/passwordentry.h
+/usr/include/gtkmm-4.0/gtkmm/picture.h
+/usr/include/gtkmm-4.0/gtkmm/popover.h
+/usr/include/gtkmm-4.0/gtkmm/popovermenu.h
+/usr/include/gtkmm-4.0/gtkmm/popovermenubar.h
+/usr/include/gtkmm-4.0/gtkmm/printcontext.h
+/usr/include/gtkmm-4.0/gtkmm/printer.h
+/usr/include/gtkmm-4.0/gtkmm/printjob.h
+/usr/include/gtkmm-4.0/gtkmm/printoperation.h
+/usr/include/gtkmm-4.0/gtkmm/printoperationpreview.h
+/usr/include/gtkmm-4.0/gtkmm/printsettings.h
+/usr/include/gtkmm-4.0/gtkmm/printunixdialog.h
+/usr/include/gtkmm-4.0/gtkmm/private/aboutdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/accessible_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/actionable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/actionbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/adjustment_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/appchooser_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/appchooserbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/appchooserdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/appchooserwidget_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/application_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/applicationwindow_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/aspectframe_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/assistant_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/assistantpage_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/binlayout_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/bitset_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/boolfilter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/border_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/box_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/boxlayout_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/buildable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/builder_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/buildercscope_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/builderscope_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/button_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/calendar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellarea_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellareabox_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellareacontext_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/celleditable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/celllayout_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrenderer_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrendereraccel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrenderercombo_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrendererpixbuf_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrendererprogress_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrendererspin_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrendererspinner_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrenderertext_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellrenderertoggle_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cellview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/centerbox_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/centerlayout_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/checkbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/colorbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/colorchooser_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/colorchooserdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/columnview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/columnviewcolumn_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/combobox_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/comboboxtext_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/constraint_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/constraintguide_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/constraintlayout_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/constrainttarget_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/csslocation_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/cssprovider_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/csssection_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/dialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/directorylist_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/dragicon_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/dragsource_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/drawingarea_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/dropcontrollermotion_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/dropdown_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/droptarget_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/droptargetasync_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/editable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/editablelabel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/emojichooser_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/entry_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/entrybuffer_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/entrycompletion_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/enums_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/eventcontroller_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/eventcontrollerfocus_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/eventcontrollerkey_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/eventcontrollerlegacy_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/eventcontrollermotion_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/eventcontrollerscroll_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/expander_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/expression_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/expressionwatch_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filechooser_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filechooserdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filechoosernative_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filechooserwidget_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filefilter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/filterlistmodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/fixed_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/flattenlistmodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/flowbox_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/flowboxchild_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/fontbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/fontchooser_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/fontchooserdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/fontchooserwidget_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/frame_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesture_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gestureclick_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturedrag_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturelongpress_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturepan_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturerotate_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturesingle_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturestylus_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gestureswipe_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gesturezoom_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/glarea_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/grid_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gridlayout_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gridlayoutchild_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/gridview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/headerbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/iconpaintable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/icontheme_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/iconview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/image_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/infobar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/label_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/layoutchild_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/layoutmanager_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/levelbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/linkbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/listbase_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/listbox_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/listboxrow_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/listitem_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/listitemfactory_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/liststore_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/listview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/lockbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/mediacontrols_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/mediafile_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/mediastream_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/menubutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/messagedialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/multifilter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/multiselection_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/multisorter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/native_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/nativedialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/noselection_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/notebook_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/notebookpage_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/numericsorter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/object_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/orientable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/overlay_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/padactionentry_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/padcontroller_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/pagesetup_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/pagesetupunixdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/paned_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/papersize_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/passwordentry_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/picture_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/popover_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/popovermenu_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/popovermenubar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printcontext_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printer_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printjob_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printoperation_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printoperationpreview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printsettings_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/printunixdialog_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/progressbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/range_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/recentinfo_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/recentmanager_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/requisition_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/revealer_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/root_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/scale_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/scalebutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/scrollable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/scrollbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/scrolledwindow_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/searchbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/searchentry_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/selectionfiltermodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/selectionmodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/separator_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/settings_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcut_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutaction_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutcontroller_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutlabel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutmanager_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutsgroup_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutssection_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutsshortcut_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcutswindow_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/shortcuttrigger_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/signallistitemfactory_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/singleselection_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/sizegroup_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/slicelistmodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/snapshot_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/sorter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/sortlistmodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/spinbutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/spinner_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stack_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stackpage_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stacksidebar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stackswitcher_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/statusbar_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stringfilter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stringlist_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stringobject_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stringsorter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/stylecontext_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/styleprovider_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/switch_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/text_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/textbuffer_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/textchildanchor_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/textiter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/textmark_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/texttag_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/texttagtable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/textview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/togglebutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/tooltip_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treedragdest_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treedragsource_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treeexpander_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treeiter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treelistmodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treelistrow_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treemodel_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treemodelfilter_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treemodelsort_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treepath_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treerowreference_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treeselection_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treesortable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treestore_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treeview_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/treeviewcolumn_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/video_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/viewport_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/volumebutton_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/widget_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/widgetpaintable_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/window_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/windowcontrols_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/windowgroup_p.h
+/usr/include/gtkmm-4.0/gtkmm/private/windowhandle_p.h
+/usr/include/gtkmm-4.0/gtkmm/progressbar.h
+/usr/include/gtkmm-4.0/gtkmm/range.h
+/usr/include/gtkmm-4.0/gtkmm/recentinfo.h
+/usr/include/gtkmm-4.0/gtkmm/recentmanager.h
+/usr/include/gtkmm-4.0/gtkmm/requisition.h
+/usr/include/gtkmm-4.0/gtkmm/revealer.h
+/usr/include/gtkmm-4.0/gtkmm/root.h
+/usr/include/gtkmm-4.0/gtkmm/scale.h
+/usr/include/gtkmm-4.0/gtkmm/scalebutton.h
+/usr/include/gtkmm-4.0/gtkmm/scrollable.h
+/usr/include/gtkmm-4.0/gtkmm/scrollbar.h
+/usr/include/gtkmm-4.0/gtkmm/scrolledwindow.h
+/usr/include/gtkmm-4.0/gtkmm/searchbar.h
+/usr/include/gtkmm-4.0/gtkmm/searchentry.h
+/usr/include/gtkmm-4.0/gtkmm/selectionfiltermodel.h
+/usr/include/gtkmm-4.0/gtkmm/selectionlistmodelimpl.h
+/usr/include/gtkmm-4.0/gtkmm/selectionmodel.h
+/usr/include/gtkmm-4.0/gtkmm/separator.h
+/usr/include/gtkmm-4.0/gtkmm/settings.h
+/usr/include/gtkmm-4.0/gtkmm/shortcut.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutaction.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutcontroller.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutlabel.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutmanager.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutsgroup.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutssection.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutsshortcut.h
+/usr/include/gtkmm-4.0/gtkmm/shortcutswindow.h
+/usr/include/gtkmm-4.0/gtkmm/shortcuttrigger.h
+/usr/include/gtkmm-4.0/gtkmm/signallistitemfactory.h
+/usr/include/gtkmm-4.0/gtkmm/singleselection.h
+/usr/include/gtkmm-4.0/gtkmm/sizegroup.h
+/usr/include/gtkmm-4.0/gtkmm/slicelistmodel.h
+/usr/include/gtkmm-4.0/gtkmm/snapshot.h
+/usr/include/gtkmm-4.0/gtkmm/sorter.h
+/usr/include/gtkmm-4.0/gtkmm/sortlistmodel.h
+/usr/include/gtkmm-4.0/gtkmm/spinbutton.h
+/usr/include/gtkmm-4.0/gtkmm/spinner.h
+/usr/include/gtkmm-4.0/gtkmm/stack.h
+/usr/include/gtkmm-4.0/gtkmm/stackpage.h
+/usr/include/gtkmm-4.0/gtkmm/stacksidebar.h
+/usr/include/gtkmm-4.0/gtkmm/stackswitcher.h
+/usr/include/gtkmm-4.0/gtkmm/statusbar.h
+/usr/include/gtkmm-4.0/gtkmm/stringfilter.h
+/usr/include/gtkmm-4.0/gtkmm/stringlist.h
+/usr/include/gtkmm-4.0/gtkmm/stringobject.h
+/usr/include/gtkmm-4.0/gtkmm/stringsorter.h
+/usr/include/gtkmm-4.0/gtkmm/stylecontext.h
+/usr/include/gtkmm-4.0/gtkmm/styleprovider.h
+/usr/include/gtkmm-4.0/gtkmm/switch.h
+/usr/include/gtkmm-4.0/gtkmm/text.h
+/usr/include/gtkmm-4.0/gtkmm/textbuffer.h
+/usr/include/gtkmm-4.0/gtkmm/textchildanchor.h
+/usr/include/gtkmm-4.0/gtkmm/textiter.h
+/usr/include/gtkmm-4.0/gtkmm/textmark.h
+/usr/include/gtkmm-4.0/gtkmm/texttag.h
+/usr/include/gtkmm-4.0/gtkmm/texttagtable.h
+/usr/include/gtkmm-4.0/gtkmm/textview.h
+/usr/include/gtkmm-4.0/gtkmm/togglebutton.h
+/usr/include/gtkmm-4.0/gtkmm/tooltip.h
+/usr/include/gtkmm-4.0/gtkmm/treedragdest.h
+/usr/include/gtkmm-4.0/gtkmm/treedragsource.h
+/usr/include/gtkmm-4.0/gtkmm/treeexpander.h
+/usr/include/gtkmm-4.0/gtkmm/treeiter.h
+/usr/include/gtkmm-4.0/gtkmm/treelistmodel.h
+/usr/include/gtkmm-4.0/gtkmm/treelistrow.h
+/usr/include/gtkmm-4.0/gtkmm/treemodel.h
+/usr/include/gtkmm-4.0/gtkmm/treemodelcolumn.h
+/usr/include/gtkmm-4.0/gtkmm/treemodelfilter.h
+/usr/include/gtkmm-4.0/gtkmm/treemodelsort.h
+/usr/include/gtkmm-4.0/gtkmm/treepath.h
+/usr/include/gtkmm-4.0/gtkmm/treerowreference.h
+/usr/include/gtkmm-4.0/gtkmm/treeselection.h
+/usr/include/gtkmm-4.0/gtkmm/treesortable.h
+/usr/include/gtkmm-4.0/gtkmm/treestore.h
+/usr/include/gtkmm-4.0/gtkmm/treeview.h
+/usr/include/gtkmm-4.0/gtkmm/treeview_private.h
+/usr/include/gtkmm-4.0/gtkmm/treeviewcolumn.h
+/usr/include/gtkmm-4.0/gtkmm/version.h
+/usr/include/gtkmm-4.0/gtkmm/video.h
+/usr/include/gtkmm-4.0/gtkmm/viewport.h
+/usr/include/gtkmm-4.0/gtkmm/volumebutton.h
+/usr/include/gtkmm-4.0/gtkmm/widget.h
+/usr/include/gtkmm-4.0/gtkmm/widgetpaintable.h
+/usr/include/gtkmm-4.0/gtkmm/window.h
+/usr/include/gtkmm-4.0/gtkmm/windowcontrols.h
+/usr/include/gtkmm-4.0/gtkmm/windowgroup.h
+/usr/include/gtkmm-4.0/gtkmm/windowhandle.h
+/usr/include/gtkmm-4.0/gtkmm/wrap_init.h
+/usr/lib64/gtkmm-4.0/include/gdkmmconfig.h
+/usr/lib64/gtkmm-4.0/include/gtkmmconfig.h
+/usr/lib64/gtkmm-4.0/proc/m4/class_gtkobject.m4
+/usr/lib64/gtkmm-4.0/proc/m4/convert.m4
+/usr/lib64/gtkmm-4.0/proc/m4/convert_gdk.m4
+/usr/lib64/gtkmm-4.0/proc/m4/convert_gtk.m4
+/usr/lib64/gtkmm-4.0/proc/m4/convert_gtkmm.m4
+/usr/lib64/libgtkmm-4.0.so
+/usr/lib64/pkgconfig/gtkmm-4.0.pc
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libgtkmm-4.0.so.0
+/usr/lib64/libgtkmm-4.0.so.0.0.0
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libgtkmm-4.0.a
