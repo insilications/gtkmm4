@@ -1,0 +1,4 @@
+-Ddefault_library=both
+-Dbuild-documentation=false
+-Dbuild-demos=false
+-Dbuild-tests=true

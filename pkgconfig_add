@@ -1,0 +1,14 @@
+# This file contains additional pkgconfig build requirements that did
+# not get picked up automatically. One name per line, no whitespace.
+gdk-pixbuf-2.0
+glib-2.0
+gtk+-3.0
+gtk4
+gtk4-unix-print
+gtk4-x11
+json-glib-1.0
+libarchive
+libgcab-1.0
+libsoup-2.4
+mm-common-libstdc++
+uuid
